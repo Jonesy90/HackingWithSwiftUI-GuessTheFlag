@@ -10,9 +10,12 @@ import SwiftUI
 struct ContentView: View {
     @State private var showingScore = false //@State property to handle the alert. An alert shows after ever country press.
     @State private var scoreTitle = "" //@State property to show if the user selected correctly.
+    @State private var score = 0 //@State property to keep track of the players score.
+    @State private var gamesPlayed = 1 //@State property to keep track of the number of games played. Limit is 8.
+    @State private var gameOver = false //@State property to handle the game over alert.
     
-    //List of all the countries available. This list matches the images in Assets.
-    @State private var countries = [
+    // A Static constant, this Array stays put and doesn't change.
+    static let allCountries = [
         "Estonia",
         "France",
         "Germany",
@@ -25,6 +28,9 @@ struct ContentView: View {
         "Ukraine",
         "US"
     ].shuffled()
+    
+    //Array of all the countries available taken from the allCountries Static Array. This Array matches the images in Assets.
+    @State private var countries = allCountries.shuffled()
     
     @State private var correctAnswer = Int.random(in: 0...2) //Generates a random number.
     
@@ -75,7 +81,7 @@ struct ContentView: View {
                 Spacer()
                 Spacer()
                 
-                Text("Score: ???")
+                Text("Score: \(score)")
                     .foregroundStyle(.white)
                     .font(.title.weight(.bold))
                 
@@ -86,27 +92,59 @@ struct ContentView: View {
         .alert(scoreTitle, isPresented: $showingScore) {
             Button("Continue", action: askQuestion)
         } message: {
-            Text("Your score is: ???")
+            Text("Your score is: \(score)")
+        }
+        .alert("Game Over!", isPresented: $gameOver) {
+            Button("New Game", action: resetGame)
+        } message: {
+            Text("Your final score is: \(score)")
         }
     }
     
-    func flagTapped(_ number: Int) {
+    /// Accepts the number passed in and compares it to the correct answer.  Based of the answer, either an correct or incorrect Alert will appear. Once a game limit is reached, an Alert will appear to replay the game.
+    /// - Parameter number: A Integer value passed in and is used to determine if the chosen flag is correct.
+    private func flagTapped(_ number: Int) {
+        let needsThe = ["UK", "US"]
+        let theirAnswer = countries[number]
+        
         if number == correctAnswer {
             scoreTitle = "Correct"
+            score += 1
         } else {
-            scoreTitle = "Incorrect!"
+            if score > 0 {
+                score -= 1
+            }
+            if needsThe.contains(theirAnswer) {
+                scoreTitle = "Incorrect! That's the flag of the \(theirAnswer)"
+            } else {
+                scoreTitle = "Incorrect! That's the flag of \(theirAnswer)"
+            }
         }
         
-        showingScore = true
+        if gamesPlayed == 8 {
+            gameOver = true
+        } else {
+            showingScore = true
+        }
     }
     
-    func askQuestion() {
-        countries.shuffle()
+    /// Progress to the next question.
+    private func askQuestion() {
+        countries.remove(at: correctAnswer)
         correctAnswer = Int.random(in: 0...2)
+        gamesPlayed += 1
+    }
+    
+    /// Resets the game back to it's default settings
+    private func resetGame() {
+        gamesPlayed = 0
+        score = 0
+        countries = Self.allCountries
+        askQuestion()
     }
 }
 
 #Preview {
     ContentView()
 }
- 
+
