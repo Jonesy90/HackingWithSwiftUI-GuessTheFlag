@@ -7,6 +7,33 @@
 
 import SwiftUI
 
+struct FlagImage: View {
+    var name: String
+    
+    var body: some View {
+        Image(name)
+            .clipShape(.capsule)
+            .shadow(radius: 5)
+    }
+}
+
+struct Title: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.largeTitle)
+            .foregroundStyle(.white)
+            .padding()
+            .background(.blue)
+            .clipShape(.rect(cornerRadius: 10))
+    }
+}
+
+extension View {
+    func titleStyle() -> some View {
+        modifier(Title())
+    }
+}
+
 struct ContentView: View {
     @State private var showingScore = false //@State property to handle the alert. An alert shows after ever country press.
     @State private var scoreTitle = "" //@State property to show if the user selected correctly.
@@ -33,6 +60,7 @@ struct ContentView: View {
     @State private var countries = allCountries.shuffled()
     
     @State private var correctAnswer = Int.random(in: 0...2) //Generates a random number.
+    
     
     var body: some View {
         ZStack {
@@ -67,9 +95,7 @@ struct ContentView: View {
                         Button {
                             flagTapped(number)
                         } label: {
-                            Image(countries[number])
-                                .clipShape(.capsule)
-                                .shadow(radius: 5)
+                            FlagImage(name: countries[number])
                         }
                     }
                 }
