@@ -9,7 +9,7 @@ This project is a flag guessing game, to quiz the user on some of the flags arou
 5. Asset Catalog
 6. Colour Gradients
 
-# What I Learn't
+## What I Learned
 - Stacks (ZStack, VStack and HStack), understanding how they should be used on a slightly more complex project (when compared to the the WeSplit project).
 - Introduction to RadialGradient as a background. This can be used with either a default or custom colour.
 - Spacer() is a new concept to how spacing can be achieved, this can be important to handle various sizes of Apple devices.
